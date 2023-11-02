@@ -6,7 +6,7 @@
 /*   By: nwyseur <nwyseur@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 09:55:36 by nwyseur           #+#    #+#             */
-/*   Updated: 2023/11/02 11:37:52 by nwyseur          ###   ########.fr       */
+/*   Updated: 2023/11/02 16:12:45 by nwyseur          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@
 struct sockaddr_in srv;
 fd_set fr, fw, fe; // 3 fd_set (fr:socket descriptore for which I'm ready to read, Fw:write, Fe:exception)
 int nMaxFd;
+int nSocket;
+int nArrClient[5];
 struct timeval tv;
 
 #endif

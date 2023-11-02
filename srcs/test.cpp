@@ -6,7 +6,7 @@
 /*   By: nwyseur <nwyseur@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 16:43:44 by nwyseur           #+#    #+#             */
-/*   Updated: 2023/11/02 11:57:58 by nwyseur          ###   ########.fr       */
+/*   Updated: 2023/11/02 16:38:11 by nwyseur          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,35 @@ int count_set_fds(fd_set *fds, int max_fd) {
     return count;
 }
 
+void ProcessTheNewRequest()
+{
+	//New connection request
+	if (FD_ISSET(nSocket, &fr))
+	{
+		socklen_t nLen = sizeof(struct sockaddr);
+		int nClientSocket = accept(nSocket, NULL, &nLen); 
+		//nSocket = listener adress through which using this fd you're opening 
+		//a channel able to receive request from the client but you can't comminicate through this channel
+		// using the accept function oyou will get a new client socket a new socket id to communicate with the client
+		if (nClientSocket > 0)
+		{
+			// put it into the client fd_set.
+			int nIndex;
+			for (nIndex = 0; nIndex < 5; nIndex++)
+			{
+				if (nArrClient[nIndex] == 0)
+				{
+					nArrClient[nIndex] = nClientSocket;
+					send(nClientSocket, "Got the connection done successfully", 37, 0);
+					break;
+				}
+			}
+			if (nIndex == 5)
+				std::cout << "No space for a new connection" << std::endl;
+		}
+	}
+}
+
 int main(int argc, char** argv)
 {
 	if (argc != 2)
@@ -33,7 +62,7 @@ int main(int argc, char** argv)
 	int port = atoi(argv[1]);
 	int nRet = 0;
 	//Initialize the socket
-	int nSocket = socket(AF_INET, SOCK_STREAM, 0);
+	nSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (nSocket < 0)
 	{
 		std::cout << "The socket not opened" << std::endl;
@@ -49,6 +78,15 @@ int main(int argc, char** argv)
 	//srv.sin_addr.s_addr = inet_addr("127.0.0.1");
 	memset(&(srv.sin_zero), 0, 8);
 
+	//setsockopt
+
+	int nOptVal = 0;
+	int nOptLen = sizeof (nOptVal);
+	nRet = setsockopt(nSocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&nOptVal, nOptLen);
+	if (nRet != 0)
+		std::cout << "setsockopt call failed" << std::endl;
+	else
+		std::cout << "setsockopt call success" << std::endl;
 	//Set the socket as non blocking socket
 	//optval = 0 means blocking and !=0 means non blocking
 	u_long optval = 1;
@@ -96,8 +134,15 @@ int main(int argc, char** argv)
 		nRet = select(nMaxFd + 1, &fr, &fw, &fe, &tv);
 		if (nRet > 0)
 		{
-			// when someone connect  or cmuunicaes with a message over
+			// when someone connect  or comunicates with a message over
 			// a dedicated communication
+
+			//Please remember that the socket listening to new clients
+			//and then comminucating with the same client later are not the same.
+			//After connection, you get one more socket to communicate with client
+			//You need to send/recv message over the network using that new socket.
+			std::cout << "Data on port....Processing now..." << std::endl;
+			ProcessTheNewRequest();
 		}
 		else if (nRet == 0)
 		{
