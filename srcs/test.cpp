@@ -6,7 +6,7 @@
 /*   By: nwyseur <nwyseur@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 16:43:44 by nwyseur           #+#    #+#             */
-/*   Updated: 2023/11/02 17:07:26 by nwyseur          ###   ########.fr       */
+/*   Updated: 2023/11/02 18:04:42 by nwyseur          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,33 @@ int count_set_fds(fd_set *fds, int max_fd) {
     }
     return count;
 }
+
+void ProcessNewMessage(int ClientSocket)
+{
+	std::cout << "Processing the new message for client socket: " << ClientSocket << std::endl;
+	char buff[1024 + 1] = { 0, };
+	int nRet = recv(ClientSocket, buff, 1024, 0);
+	if (nRet < 0)
+	{
+		std::cout << "Oups something went wrong...Closing the connnection for client" << std::endl;
+		close(ClientSocket);
+		for (int nIndex = 0; nIndex < 5; nIndex++)
+			{
+				if (nArrClient[nIndex] == ClientSocket)
+				{
+					nArrClient[nIndex] = 0;
+					break;
+				}
+			}
+	}
+	else
+	{
+		std::cout << "the message from the client is: " << buff << std::endl;
+		//Send the response to client
+		send(ClientSocket, "Processed your request", 23, 0);
+		std::cout << "++++++++++++++++++++++++++++++++++" << std::endl;
+	}
+} 
 
 void ProcessTheNewRequest()
 {
@@ -58,6 +85,7 @@ void ProcessTheNewRequest()
 				//got a new message from the client
 				//Just recv new message
 				//just queue that for new worker of your server to fullfill the request
+				ProcessNewMessage(nArrClient[nIndex]);
 			}
 		}
 	}
@@ -143,7 +171,6 @@ int main(int argc, char** argv)
 
 
 		//the new client socket have to be put in the fd set
-		//
 		for(int nIndex = 0; nIndex < 5; nIndex++)
 		{
 			if ( nArrClient[nIndex] != 0)
@@ -152,7 +179,6 @@ int main(int argc, char** argv)
 				FD_SET(nArrClient[nIndex], &fe);
 			}
 		}
-
 		//std::cout << "Before select call: " << count_set_fds(&fr, nMaxFd + 1) << std:: endl;
 		//Keep waiting for new requests and proceed as per the request
 		nRet = select(nMaxFd + 1, &fr, &fw, &fe, &tv);
@@ -173,7 +199,6 @@ int main(int argc, char** argv)
 			//No connection or any communication request made or you can 
 			// say that none of the socket descriptors are ready
 			//std::cout << "Nothing on port: " << port << std:: endl;
-
 		}
 		else
 		{

@@ -6,7 +6,7 @@
 /*   By: nwyseur <nwyseur@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 09:55:36 by nwyseur           #+#    #+#             */
-/*   Updated: 2023/11/02 16:12:45 by nwyseur          ###   ########.fr       */
+/*   Updated: 2023/11/02 17:35:57 by nwyseur          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <string>
 # include <cstring>
 # include <iostream>
+# include <unistd.h>
 # include <sys/types.h>
 # include <sys/socket.h>
 # include <sys/ioctl.h>
