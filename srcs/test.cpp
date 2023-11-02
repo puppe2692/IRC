@@ -6,7 +6,7 @@
 /*   By: nwyseur <nwyseur@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 16:43:44 by nwyseur           #+#    #+#             */
-/*   Updated: 2023/11/02 16:38:11 by nwyseur          ###   ########.fr       */
+/*   Updated: 2023/11/02 17:07:26 by nwyseur          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,18 @@ void ProcessTheNewRequest()
 			}
 			if (nIndex == 5)
 				std::cout << "No space for a new connection" << std::endl;
+		}
+	}
+	else
+	{
+		for (int nIndex = 0; nIndex < 5; nIndex++)
+		{
+			if( FD_ISSET(nArrClient[nIndex], &fr))
+			{
+				//got a new message from the client
+				//Just recv new message
+				//just queue that for new worker of your server to fullfill the request
+			}
 		}
 	}
 }
@@ -129,7 +141,19 @@ int main(int argc, char** argv)
 		FD_SET(nSocket, &fr);
 		FD_SET(nSocket, &fe);
 
-		std::cout << "Before select call: " << count_set_fds(&fr, nMaxFd + 1) << std:: endl;
+
+		//the new client socket have to be put in the fd set
+		//
+		for(int nIndex = 0; nIndex < 5; nIndex++)
+		{
+			if ( nArrClient[nIndex] != 0)
+			{
+				FD_SET(nArrClient[nIndex], &fr);
+				FD_SET(nArrClient[nIndex], &fe);
+			}
+		}
+
+		//std::cout << "Before select call: " << count_set_fds(&fr, nMaxFd + 1) << std:: endl;
 		//Keep waiting for new requests and proceed as per the request
 		nRet = select(nMaxFd + 1, &fr, &fw, &fe, &tv);
 		if (nRet > 0)
@@ -148,7 +172,7 @@ int main(int argc, char** argv)
 		{
 			//No connection or any communication request made or you can 
 			// say that none of the socket descriptors are ready
-			std::cout << "Nothing on port: " << port << std:: endl;
+			//std::cout << "Nothing on port: " << port << std:: endl;
 
 		}
 		else
@@ -159,6 +183,6 @@ int main(int argc, char** argv)
 
 		}
 
-		std::cout << "After select call: " << count_set_fds(&fr, nMaxFd + 1) << std:: endl;
+		//std::cout << "After select call: " << count_set_fds(&fr, nMaxFd + 1) << std:: endl;
 	}
 }
