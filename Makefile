@@ -6,15 +6,15 @@
 #    By: nwyseur <nwyseur@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/28 21:18:35 by nwyseur           #+#    #+#              #
-#    Updated: 2023/10/31 09:59:23 by nwyseur          ###   ########.fr        #
+#    Updated: 2023/11/03 11:21:20 by nwyseur          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME		:= Test
+NAME		:= Test2
 
-SRCS_FILES	:= test.cpp \
+SRCS_FILES	:= test2.cpp \
 
-HEADER_FILE	:= PmergeMe.hpp \
+HEADER_FILE	:= irc2.hpp \
 
 SRCS_DIR	:= ./srcs/
 INC_DIR		:= ./includes/
